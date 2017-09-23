@@ -5,3 +5,13 @@
 text, tspan{
     font-size: 1.025em !important;
 }
+
+.node {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-width: 1.5px;
+}
