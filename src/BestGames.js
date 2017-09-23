@@ -6,7 +6,7 @@ import bestGamesObject from './best100games.json';
 
 function keyAsId(source){
     return Object.keys(source).map(function(key){
-        source[key].id = parseInt(key, 10);
+        source[key].id = source[key].appid;
         return source[key];
     });
 }
@@ -23,16 +23,29 @@ function linksForAllNodes(nodes){
     }
     return result;
 }
-function createLinksFor(nodes, fieldName){
-    var result = [];
+function clustersOf(nodes, fieldName){
     var nodesByField = {};
     var getKey = fieldFrom(fieldName);
+    var clusterNames = [];
     nodes.map(function(node){
         var field = getKey(node);
         var fieldNodes = nodesByField[field] || [];
+        console.log('field', field);
+        var clusterNumber = clusterNames.indexOf(field);
+        if (clusterNumber === -1){
+            clusterNames.push(field);
+            clusterNumber = clusterNames.length;
+        }
+        console.log(clusterNumber, field);
+        node.cluster = clusterNumber;
         fieldNodes.push(node);
         nodesByField[field] = fieldNodes;
     });
+    return nodesByField;
+}
+function createLinksFor(nodes, fieldName){
+    var result = [];
+    var nodesByField = clustersOf(nodes, fieldName);
     Object.keys(nodesByField).map(function(field){
         var fieldLinks = linksForAllNodes(nodesByField[field]);
         result = result.concat(fieldLinks);
@@ -44,16 +57,16 @@ function createLinksFor(nodes, fieldName){
 class BestGames extends Component {
 
     constructor(props){
-        super(props)
+        super(props);
         var games = keyAsId(bestGamesObject);
+        var clusters = clustersOf(games, 'developer');
         var connections = createLinksFor(games, 'developer');
-        console.log('connections', connections);
         this.state = {
           dimensions: {width: 900, height: 500},
           fields: [],
-          sizeFrom: fieldFrom('players_2weeks'),
+          valueMethod: fieldFrom('players_2weeks'),
           games: games,
-          connections: connections
+          clusters: clusters
         };
         this.createBestGames = this.createBestGames.bind(this)
     }
@@ -81,9 +94,8 @@ class BestGames extends Component {
         <ForceDirectedGraph
           height={this.state.dimensions.height}
           width={this.state.dimensions.width}
-          valueMethod={this.state.sizeFrom}
+          valueMethod={this.state.valueMethod}
           nodes={this.state.games}
-          links={this.state.connections}
           valueUnit={"Users"} />
       </div>
    }
