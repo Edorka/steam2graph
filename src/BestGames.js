@@ -75,7 +75,6 @@ class BestGames extends Component {
             games: games,
             clusters: clusters
         };
-        this.createBestGames = this.createBestGames.bind(this)
     }
     componentDidMount() {
         this.setState(function(previous, props){
@@ -86,14 +85,22 @@ class BestGames extends Component {
             }
           };
         });
-        this.createBestGames();
 
     }
-    componentDidUpdate() {
-        this.createBestGames();
+    shouldComponentUpdate(nextProps, nextState){
+        var props = nextProps;
+        var state = nextState;
+        if (state.valueBy){
+            nextState.valueMethod = fieldFrom(possibleValues[0].field);
+        }
+        if (state.groupBy){
+            var games = state.games;
+            nextState.clusters = clustersOf(games, state.groupBy.field);
+        }
+        return true;
     }
-    createBestGames() {
-        return;
+    componentDidUpdate(prevProps, prevState) {
+
     }
     nextValue(){
         var position = possibleValues.indexOf(this.state.valueBy);
