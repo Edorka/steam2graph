@@ -50,18 +50,28 @@ function createLinksFor(nodes, fieldName){
     });
     return result;
 }
-
-
+var possibleValues = [
+    {label: 'Owners', field: 'owners'},
+    {label: 'Players last 2 weeks', field: 'players_2weeks'},
+    {label: 'Players Forever', field: 'players_forever'}
+];
+var possibleGroups = [
+    {label: 'Developer', field: 'developer'},
+    {label: 'Publisher', field: 'publisher'}
+];
 class BestGames extends Component {
 
     constructor(props){
         super(props);
         var games = keyAsId(bestGamesObject);
+        console.log('game', games[1]);
         var clusters = clustersOf(games, 'developer');
         this.state = {
             dimensions: {width: 900, height: 500},
             fields: [],
-            valueMethod: fieldFrom('players_2weeks'),
+            groupBy: possibleGroups[0],
+            valueBy: possibleValues[0],
+            valueMethod: fieldFrom(possibleValues[0].field),
             games: games,
             clusters: clusters
         };
@@ -85,16 +95,43 @@ class BestGames extends Component {
     createBestGames() {
         return;
     }
+    nextValue(){
+        var position = possibleValues.indexOf(this.state.valueBy);
+        var newPosition = position + 1;
+        newPosition = newPosition < possibleValues.length ? newPosition: 0;
+        this.setState({
+            valueBy: possibleValues[newPosition]
+        });
+    }
+    nextGroup(){
+        var position = possibleGroups.indexOf(this.state.groupBy);
+        var newPosition = position + 1;
+        newPosition = newPosition < possibleGroups.length ? newPosition: 0;
+        this.setState({
+            groupBy: possibleGroups[newPosition]
+        });
+    }
+
     render() {
-      return <div className="fill-layout"
-      ref={node => this.node = node}>
+      return(
+      <div className="fill-layout"
+        ref={node => this.node = node}>
+        <div className="layout-row padding">
+          Size by <button  onClick={(e) => this.nextValue(e)}>
+            {this.state.valueBy.label}
+          </button>
+          Group by
+          <button  onClick={(e) => this.nextGroup(e)}>
+            {this.state.groupBy.label}
+          </button>
+        </div>
         <ForceDirectedGraph
           height={this.state.dimensions.height}
           width={this.state.dimensions.width}
           valueMethod={this.state.valueMethod}
           nodes={this.state.games}
           valueUnit={"Users"} />
-      </div>
+      </div>);
    }
 }
 export default BestGames

@@ -7,11 +7,16 @@ text, tspan{
 }
 
 .node {
-  stroke: #000;
+  stroke: #3c3c3c;
   stroke-width: 1.5px;
 }
 
-.link {
-  stroke: #999;
-  stroke-width: 1.5px;
+button{
+  padding: 0.25em 0.5em;
+  margin: 0 0.45em;
+  background: #9a9a9a;
+  border: solid #3c3c3c 1px;
+}
+.padding{
+    padding: 0.5em;
 }
