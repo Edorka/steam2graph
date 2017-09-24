@@ -30,13 +30,11 @@ function clustersOf(nodes, fieldName){
     nodes.map(function(node){
         var field = getKey(node);
         var fieldNodes = nodesByField[field] || [];
-        console.log('field', field);
         var clusterNumber = clusterNames.indexOf(field);
         if (clusterNumber === -1){
             clusterNames.push(field);
             clusterNumber = clusterNames.length;
         }
-        console.log(clusterNumber, field);
         node.cluster = clusterNumber;
         fieldNodes.push(node);
         nodesByField[field] = fieldNodes;
@@ -60,13 +58,12 @@ class BestGames extends Component {
         super(props);
         var games = keyAsId(bestGamesObject);
         var clusters = clustersOf(games, 'developer');
-        var connections = createLinksFor(games, 'developer');
         this.state = {
-          dimensions: {width: 900, height: 500},
-          fields: [],
-          valueMethod: fieldFrom('players_2weeks'),
-          games: games,
-          clusters: clusters
+            dimensions: {width: 900, height: 500},
+            fields: [],
+            valueMethod: fieldFrom('players_2weeks'),
+            games: games,
+            clusters: clusters
         };
         this.createBestGames = this.createBestGames.bind(this)
     }
