@@ -8,7 +8,14 @@ var padding = 2, clusterPadding = 6;
 
 /*
 Modified from https://gist.github.com/pbogden/854425acb57b4e5a4fdf4242c068a127
+
 */
+function showProperties(d){
+     return "Name: " + d.name + "<br>" +
+            "Developer:"+ d.developer + "<br>" +
+            "Publisher: "+ d.publisher;
+}
+
 class ForceDirectedGraph extends Component {
 
   constructor(props){
@@ -20,12 +27,13 @@ class ForceDirectedGraph extends Component {
       var tool_tip = tip()
         .attr("class", "d3-tip")
         .offset([-8, 0])
-        .html(function(d) { return "Name: " + d.name + "<br>Developer"+ d.developer; });
+        .html(showProperties);
       this.svg.call(tool_tip);
-      var graph = this.svg.append('g')
+      var graph = this.graph = this.svg.append('g')
                       .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
-      var node = graph.selectAll(".node"),
+      var node = this.node = graph.selectAll(".node"),
           size = d3.scaleLinear().range([6, height]);
+      this.size = size;
       function moveInsideBoundaries(axis, limit){
           return function ofItem(d){
               return Math.max(d.radius, Math.min(limit - d.radius, d[axis]));
@@ -40,23 +48,22 @@ class ForceDirectedGraph extends Component {
       var value = this.props.valueMethod;
       var nodes = this.props.nodes, clusters = {};
       size.domain([0 , d3.sum(nodes, value)]);
-      var color = d3.scaleSequential(d3.interpolateRainbow)
+      var color = this.color = d3.scaleSequential(d3.interpolateRainbow)
                       .domain([0, d3.max(nodes, function(d){return d.cluster;})]);
       nodes.map(function(d){
           var c = d.cluster;
           d.radius = size(value(d));
-          d.color = color(c);
           if ( (clusters[c] === undefined) || (d.radius > clusters[c].radius) ){
               clusters[c] = d;
           }
       });
       function forceCluster(alpha) {
-        for (var i = 0, n = nodes.length, node, cluster, k = alpha * 1; i < n; ++i) {
-          node = nodes[i];
-          cluster = clusters[node.cluster];
+        var k = alpha * 1;
+        graph.selectAll(".node").each(function(node){
+          var cluster = clusters[node.cluster];
           node.vx -= (node.x - cluster.x) * k;
           node.vy -= (node.y - cluster.y) * k;
-        }
+        });
       }
       var forceCollide = d3.forceCollide()
           .radius(function(d) {return d.radius + padding;})
@@ -74,12 +81,25 @@ class ForceDirectedGraph extends Component {
                 .enter().append("circle")
                   .attr("class", "node")
                   .attr("r", function(d){ return d.radius;})
-                  .attr("fill", function(d){return d.color; })
+                  .attr("fill", function(d){return color(d.cluster); })
                   .attr("cx", function(d) { return d.x ;})
                   .attr("cy", function(d) { return d.y ;})
                   .on('mouseover', tool_tip.show)
                   .on('mouseout', tool_tip.hide);
 
+  }
+  componentDidUpdate(prevProps, prevState) {
+      var color = this.color;
+      var value = prevProps.valueMethod;
+      var size = this.size;
+      size.domain([0 , d3.sum(prevProps.nodes, value)]);
+      this.graph.selectAll(".node").data(prevProps.nodes)
+            .attr("fill", function(d){return color(d.cluster); })
+            .attr("r", function(d){
+                return d.radius = size(value(d));
+            })
+            .attr("cx", function(d) { return d.x ;})
+            .attr("cy", function(d) { return d.y ;});
   }
   componentWillReceiveProps(nextProps) {
     // we should actually clone the nodes and links

@@ -91,16 +91,14 @@ class BestGames extends Component {
         var props = nextProps;
         var state = nextState;
         if (state.valueBy){
-            nextState.valueMethod = fieldFrom(possibleValues[0].field);
+            nextState.valueMethod = fieldFrom(state.valueBy.field);
         }
         if (state.groupBy){
             var games = state.games;
-            nextState.clusters = clustersOf(games, state.groupBy.field);
+            state.clusters = clustersOf(games, state.groupBy.field);
+            state.games = games;
         }
         return true;
-    }
-    componentDidUpdate(prevProps, prevState) {
-
     }
     nextValue(){
         var position = possibleValues.indexOf(this.state.valueBy);
@@ -111,6 +109,7 @@ class BestGames extends Component {
         });
     }
     nextGroup(){
+        // TDOO: DRY
         var position = possibleGroups.indexOf(this.state.groupBy);
         var newPosition = position + 1;
         newPosition = newPosition < possibleGroups.length ? newPosition: 0;
