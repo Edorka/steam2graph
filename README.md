@@ -2,6 +2,7 @@
 
 Simple cluster graph to show sales/users of most popular steam games.
 
+Data retrieved from http://steamspy.com (http://steamspy.com/api.php?request=top100in2weeks)
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
