@@ -1,0 +1,9 @@
+button{
+  padding: 0.25em 0.5em;
+  margin: 0 0.45em;
+  background: #9a9a9a;
+  border: solid #3c3c3c 1px;
+}
+.padding{
+    padding: 0.5em;
+}

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './BestGames.css';
 import ForceDirectedGraph from './ForceDirectedGraph.js'
 import bestGamesObject from './best100games.json';
+import SwitchNext from './SwitchNext.js'
 // Include its styles in you build process as well
 
 function keyAsId(source){
@@ -75,6 +76,8 @@ class BestGames extends Component {
             games: games,
             clusters: clusters
         };
+        this.changedValue = this.changedValue.bind(this);
+        this.changeGrouping = this.changeGrouping.bind(this);
     }
     componentDidMount() {
         this.setState(function(previous, props){
@@ -100,22 +103,11 @@ class BestGames extends Component {
         }
         return true;
     }
-    nextValue(){
-        var position = possibleValues.indexOf(this.state.valueBy);
-        var newPosition = position + 1;
-        newPosition = newPosition < possibleValues.length ? newPosition: 0;
-        this.setState({
-            valueBy: possibleValues[newPosition]
-        });
+    changedValue(option){
+        this.setState({valueBy: option});
     }
-    nextGroup(){
-        // TDOO: DRY
-        var position = possibleGroups.indexOf(this.state.groupBy);
-        var newPosition = position + 1;
-        newPosition = newPosition < possibleGroups.length ? newPosition: 0;
-        this.setState({
-            groupBy: possibleGroups[newPosition]
-        });
+    changeGrouping(option){
+        this.setState({groupBy: option});
     }
 
     render() {
@@ -123,13 +115,16 @@ class BestGames extends Component {
       <div className="fill-layout"
         ref={node => this.node = node}>
         <div className="layout-row padding">
-          Size by <button  onClick={(e) => this.nextValue(e)}>
-            {this.state.valueBy.label}
-          </button>
+          Size by
+          <SwitchNext
+            choices={possibleValues}
+            onSelection={this.changedValue}>
+          </SwitchNext>
           Group by
-          <button  onClick={(e) => this.nextGroup(e)}>
-            {this.state.groupBy.label}
-          </button>
+          <SwitchNext
+            choices={possibleGroups}
+            onSelection={this.changeGrouping}>
+          </SwitchNext>
         </div>
         <ForceDirectedGraph
           height={this.state.dimensions.height}

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './ForceDirectedGraph.css'
 import * as d3 from "d3";
 import tip from "d3-tip";
+import SwitchNext from './SwitchNext.js'
 
 var width = 900, height = 500;
 var padding = 2, clusterPadding = 6;
