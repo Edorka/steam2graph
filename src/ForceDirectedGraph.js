@@ -2,14 +2,12 @@ import React, { Component } from 'react';
 import './ForceDirectedGraph.css'
 import * as d3 from "d3";
 import tip from "d3-tip";
-import SwitchNext from './SwitchNext.js'
 
 var width = 900, height = 500;
 var padding = 2, clusterPadding = 6;
 
 /*
 Modified from https://gist.github.com/pbogden/854425acb57b4e5a4fdf4242c068a127
-
 */
 function showProperties(d){
      return "Name: " + d.name + "<br>" +
