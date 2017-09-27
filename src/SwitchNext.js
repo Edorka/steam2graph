@@ -8,14 +8,16 @@ class SwitchNext extends Component {
       super(props);
       this.choices = [];
       this.state = {
-        choice: {},
+        choice: {'label':''},
         position: null
       };
     }
     componentDidMount() {
-      this.state.position = 0;
       this.choices = this.props.choices;
-      this.state.choice = this.choices[this.state.position];
+      this.setState({
+          position: 0,
+          choice: this.choices[0]
+      });
     }
     next(e){
       var newPosition = this.state.position + 1;
