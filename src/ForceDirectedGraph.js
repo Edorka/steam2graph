@@ -67,15 +67,15 @@ class ForceDirectedGraph extends Component {
       var forceCollide = d3.forceCollide()
           .radius(function(d) {return d.radius + padding;})
           .iterations(1);
-      d3.forceSimulation()
+      this.simulation = d3.forceSimulation()
           .force("center", d3.forceCenter())
           .force("collide", forceCollide)
           .force("cluster", forceCluster)
           .force("gravity", d3.forceManyBody(30))
           .force("x", d3.forceX().strength(0.7))
           .force("y", d3.forceY().strength(0.7))
-          .on("tick", ticked)
-          .nodes(this.props.nodes);
+          .on("tick", ticked);
+      this.simulation.nodes(this.props.nodes);
       node = node.data(this.props.nodes)
                 .enter().append("circle")
                   .attr("class", "node")
@@ -87,19 +87,25 @@ class ForceDirectedGraph extends Component {
                   .on('mouseout', tool_tip.hide);
 
   }
-  componentDidUpdate(prevProps, prevState) {
+  componentWillUpdate(props, prevState) {
       var color = this.color;
-      var value = prevProps.valueMethod;
+      var value = props.valueMethod;
       var size = this.size;
-      size.domain([0 , d3.sum(prevProps.nodes, value)]);
-      this.graph.selectAll(".node").data(prevProps.nodes)
-            .attr("fill", function(d){return color(d.cluster); })
-            .attr("r", function(d){
-                return d.radius = size(value(d));
-            })
-            .attr("cx", function(d) { return d.x ;})
-            .attr("cy", function(d) { return d.y ;});
+      console.log('pre', this.props.nodes);
+      console.log('current', props.nodes);
+      size.domain([0 , d3.sum(props.nodes, value)]);
+      this.graph
+          .selectAll(".node").data(props.nodes)
+          .attr("fill", function(d){return color(d.cluster); })
+          .attr("r", function(d){
+              return d.radius = size(value(d));
+          })
+          .attr("cx", function(d) { return d.x ;})
+          .attr("cy", function(d) { return d.y ;});
+      this.simulation.nodes(props.nodes);
+      return true;
   }
+
   componentWillReceiveProps(nextProps) {
     // we should actually clone the nodes and links
     // since we're not supposed to directly mutate
